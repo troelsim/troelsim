@@ -1,5 +1,22 @@
 <html>
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" type="application/javascript"></script>
+	<script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+	<script type="text/x-handlebars-template" id="item-template">
+		<div class="media">
+		  <div class="media-left">
+			<a href="{{link_url}}">
+			  <img class="media-object" src="{{img_url}}" alt="{{name}}">
+			</a>
+		  </div>
+		  <div class="media-body">
+			<h4 class="media-heading"><a href="{{link_url}}">{{name}}</a> <small>{{category}}</small></h4>
+			<p>
+				{{description}}
+			</p>
+		  </div>
+		</div>
+	</script>
 	<script>
 	  window.fbAsyncInit = function() {
 		FB.init({
@@ -9,23 +26,28 @@
 		});
 		console.log("OK");
 		FB.api(
-			"/institutforx/likes",
+			"/institutforx/likes?fields=picture,description,name,category,link",
 			{
 				access_token: "1178960235456575|bkYnls0uiCLy5sO9Ic8torA2JYM",
 				limit: 1000
 			},
 			function (response) {
-				console.log(response);
+			  var source = document.getElementById("item-template").innerHTML;
+			  console.log(source);
+			  var template = Handlebars.compile(source);
+
 			  if (response && !response.error) {
 				var container = document.getElementById("container")
 				_.each(response.data, function(item){
-					var li = document.createElement("LI");
-					var link = document.createElement("A");
-					link.href="http://facebook.com/" + item.id;
-					var text = document.createTextNode(item.name);
-					link.appendChild(text);
-					li.appendChild(link);
-					container.appendChild(li);
+					var div = document.createElement("DIV");
+					div.innerHTML = template({
+						name: item.name,
+						description: item.description,
+						img_url: item.picture.data.url,
+						link_url: item.link,
+						category: item.category,
+					});
+					container.appendChild(div);
 				}); 
 			  }
 			}
@@ -40,12 +62,7 @@
 		 fjs.parentNode.insertBefore(js, fjs);
 	   }(document, 'script', 'facebook-jssdk'));
 	</script>
-	<style type="text/css">
-		body {
-			font-family: Helvetica, sans-serif;
-		}
-	</style>
 	<body>
-	<ul id="container"></ul>
+	<div id="container"></div>
 	</body>
 </html>
