@@ -30,7 +30,6 @@
 		  xfbml      : false,
 		  version    : 'v2.6'
 		});
-		console.log("OK");
 		FB.api(
 			"/institutforx/likes?fields=picture,description,name,category,link",
 			{
@@ -39,7 +38,6 @@
 			},
 			function (response) {
 			  var source = document.getElementById("item-template").innerHTML;
-			  console.log(source);
 			  var template = Handlebars.compile(source);
 
 			  if (response && !response.error) {
