@@ -47,7 +47,7 @@
 					div.innerHTML = template({
 						name: item.name,
 						description: item.description,
-						img_url: item.picture.data.url,
+						img_url: "http://graph.facebook.com/v2.6/" + item.id + "/picture?redirect=true&type=large",
 						link_url: item.link,
 						category: item.category,
 					});
