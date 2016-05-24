@@ -5,10 +5,35 @@
 	<style type="text/css">
 		#container > div {
 			max-width: 700px;
-			margin: 15px;
+			min-width: 200px;
+			min-height: 200px;
+			margin: 0px;
+			float: left;
+		}
+		body {
+			background-color: #e9ebee;
+			font-size: 14px;
+			font-family: Helvetica, Arial, sans-serif;
+		}
+		#feedContainer div {
+			background-color: #ffffff;
+			margin: 10px;
+			border: 1px solid rgb(208, 209, 213);
+			margin: 10px;
+			padding: 10px;
+			max-width: 700px;
+		}
+		a, h2 {
+			font-family: Helvetica, Arial, sans-serif;
+			font-size: 14px;
+			font-weight: bold;
 		}
 	</style>
 	<script type="text/x-handlebars-template" id="item-template">
+			<a href="{{link_url}}">
+			  <img  src="{{img_url}}" alt="{{name}}">
+			</a>
+			<!--
 		<div class="media">
 		  <div class="media-left">
 			<a href="{{link_url}}">
@@ -21,10 +46,39 @@
 				{{description}}
 			</p>
 		  </div>
-		</div>
+		</div>-->
+	</script>
+	<script type="text/x-handlebars-template" id="feed-post-template">
+		<a href="{{post_link}}"<h2>{{from_name}}</h2></a>
+		<p>{{message}}</p>{{#if post_picture}}<a href="{{post_link}}"><img src="{{post_picture}}"/></a>{{/if}}
 	</script>
 	<script>
 	  window.fbAsyncInit = function() {
+		var TOKEN = "1178960235456575|bkYnls0uiCLy5sO9Ic8torA2JYM";
+
+		function shuffleArray(array) {
+			for (var i = array.length - 1; i > 0; i--) {
+				var j = Math.floor(Math.random() * (i + 1));
+				var temp = array[i];
+				array[i] = array[j];
+				array[j] = temp;
+			}
+			return array;
+		}
+
+		function mergeFeeds(feeds){
+			var mergedFeed = [];
+			var numberOfFeeds = feeds.length;
+			while(feeds.reduce(function(memo, item){ return memo + item.length }, 0) > 0){
+				var nonZeroIndices = [];
+				for (var i=0; i < numberOfFeeds; i++)
+					if (feeds[i].length > 0) nonZeroIndices.push(i);
+				var randomFeedIndex = nonZeroIndices[_.random(nonZeroIndices.length - 1)];
+				mergedFeed.push(feeds[randomFeedIndex].pop());
+			}
+			return mergedFeed.reverse();
+		}
+
 		FB.init({
 		  appId      : '1178960235456575',
 		  xfbml      : false,
@@ -33,7 +87,7 @@
 		FB.api(
 			"/institutforx/likes?fields=picture,description,name,category,link",
 			{
-				access_token: "1178960235456575|bkYnls0uiCLy5sO9Ic8torA2JYM",
+				access_token: TOKEN,
 				limit: 1000
 			},
 			function (response) {
@@ -52,7 +106,39 @@
 						category: item.category,
 					});
 					container.appendChild(div);
-				}); 
+				});
+
+				var randomPageIDs = shuffleArray(response.data).map(function(item){ return item.id });
+				var numberOfFeeds = 10;
+				var randomPick = randomPageIDs.slice(0, numberOfFeeds);
+
+				var feedContainer = document.getElementById("feedContainer");
+				var feeds = [];
+
+				var feedCounter = numberOfFeeds;
+				_.each(randomPick, function(id){
+					FB.api("/" + id + "/feed?fields=picture,message,id,link,from&type=post", { access_token: TOKEN, limit: 10 }, function(response){
+						feeds.push(response.data);
+						if (--feedCounter == 0){
+							var mergedFeeds = mergeFeeds(feeds);
+							var template = Handlebars.compile(document.getElementById("feed-post-template").innerHTML);
+							var feedContainer = document.getElementById("feedContainer");
+							_.each(mergedFeeds, function(item){
+								feedContainer.appendChild
+								var post = document.createElement("DIV");
+								post.innerHTML = template({
+									from_name: item.from.name,
+									from_link: "http://facebook.com/" + item.from.id,
+									post_link: item.link,
+									post_picture: item.picture,
+									message: item.message
+								});
+								feedContainer.appendChild(post);
+							});
+							console.log(mergedFeeds);
+						}
+					});
+				});
 			  }
 			}
 		);
@@ -67,6 +153,9 @@
 	   }(document, 'script', 'facebook-jssdk'));
 	</script>
 	<body>
-	<div id="container"></div>
+	<h1>Logo-tsunami</h1>
+	<div id="container" class="clearfix"></div>
+	<h1>Mix feed</h1>
+	<div id="feedContainer"></div>
 	</body>
 </html>
