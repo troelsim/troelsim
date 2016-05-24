@@ -95,8 +95,9 @@
 			  var template = Handlebars.compile(source);
 
 			  if (response && !response.error) {
+			  	var items = shuffleArray(response.data);
 				var container = document.getElementById("container")
-				_.each(response.data, function(item){
+				_.each(items, function(item){
 					var div = document.createElement("DIV");
 					div.innerHTML = template({
 						name: item.name,
