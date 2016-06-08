@@ -28,16 +28,70 @@
 			font-size: 14px;
 			font-weight: bold;
 		}
+		.hoverting {
+			background-color: white;
+			position: relative;
+		}
+		.hoverting img, .hoverting .blanket, .hoverting .fade-image {
+			position: absolute;
+			width: 200px;
+			height: 200px;
+		}
+		.fade-image {
+			
+		}
+		.blanket {
+			background-color: #feec4d;
+			opacity: 0;
+			margin: 0;
+			z-index: 10;
+			overflow: hidden;
+			color: black;
+			padding: 5px;
+			font-weight: normal;
+			font-size: 16px;
+			font-family: 'Minion Pro';
+			padding-bottom: 20px;
+		}
+		.blanket h3 {
+		 	margin-top: 0;
+			font-family: 'SquareFont';
+			word-wrap: break-word;
+		}
+		.hoverting:hover .blanket {
+			opacity: 1;
+		}
+		.hoverting .fade { 
+			font-family: 'SquareFont';
+			opacity: 1;
+			position: absolute; 
+			bottom: 0; 
+			left: 0;
+			width: 100%; 
+			text-align: center; 
+			margin: 0;
+			padding: 80px 0 10px 0; 
+			z-index: 20;
+			vertical-align: bottom;
+		  	background-image: linear-gradient(to bottom, transparent, #feec4d 80%, #feec4d);
+		}
 	</style>
 	<script type="text/x-handlebars-template" id="item-template">
-			<a href="{{link_url}}">
+			<a href="{{link_url}}" class="hoverting">
+				<div class="blanket">
+					<h3>{{name}}</h3>
+					<p>{{description}}</p>
+				<div class="fade">
+					GO TO PAGE
+				</div>
+				</div>
 			  <img  src="{{img_url}}" alt="{{name}}">
 			</a>
 			<!--
 		<div class="media">
 		  <div class="media-left">
 			<a href="{{link_url}}">
-			  <img class="media-object" src="{{img_url}}" alt="{{name}}">
+				  <img class="media-object" src="{{img_url}}" alt="{{name}}">
 			</a>
 		  </div>
 		  <div class="media-body">
@@ -154,9 +208,17 @@
 	   }(document, 'script', 'facebook-jssdk'));
 	</script>
 	<body>
-	<h1>Logo-tsunami</h1>
+	<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/da_DK/sdk.js#xfbml=1&version=v2.6&appId=1178960235456575";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<!--	<h1>Logo-tsunami</h1>-->
 	<div id="container" class="clearfix"></div>
-	<h1>Mix feed</h1>
-	<div id="feedContainer"></div>
+<!--	<h1>Mix feed</h1>
+	<div id="feedContainer"></div>-->
 	</body>
 </html>
